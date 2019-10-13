@@ -43,7 +43,7 @@ def logout():
 def login():
     if request.method == 'POST':
         if request.form['username'] != app.config['USERNAME'] or \
-            request.form['password'] != app.config['PASSWORD']:
+                request.form['password'] != app.config['PASSWORD']:
             error = 'Invalid Credentialss. Please try again.'
             return render_template('login.html', error=error)
         else:
@@ -60,7 +60,7 @@ def tasks():
     cursor = g.db.execute(
         """
             select  name, due_date, priority, task_id
-              from  tasks 
+              from  tasks
              where  status=1
         """
     )
@@ -68,11 +68,11 @@ def tasks():
                        due_date=row[1],
                        priority=row[2],
                        task_id=row[3])
-                       for row in cursor.fetchall()]
+                  for row in cursor.fetchall()]
     cursor = g.db.execute(
         """
             select  name, due_date, priority, task_id
-              from  tasks 
+              from  tasks
              where  status=0
         """
     )
@@ -80,7 +80,7 @@ def tasks():
                          due_date=row[1],
                          priority=row[2],
                          task_id=row[3])
-                         for row in cursor.fetchall()]
+                    for row in cursor.fetchall()]
     g.db.close()
     return render_template(
         'tasks.html',
@@ -88,6 +88,7 @@ def tasks():
         open_tasks=open_tasks,
         closed_tasks=closed_tasks
     )
+
 
 # add new tasks
 @app.route('/add/', methods=['POST'])
@@ -106,10 +107,10 @@ def new_task():
             insert into tasks (name, due_date, priority, status)
             values (?, ?, ?, 1)
             """, [
-                    request.form['name'],
-                    request.form['due_date'],
-                    request.form['priority']
-                 ]
+                request.form['name'],
+                request.form['due_date'],
+                request.form['priority']
+            ]
         )
         g.db.commit()
         g.db.close()
@@ -122,7 +123,7 @@ def new_task():
 @login_required
 def complete(task_id):
     g.db = connect_db()
-    cursor = g.db.execute(
+    g.db.execute(
         "update tasks set status = 0 where task_id="+str(task_id)
     )
     g.db.commit()
@@ -130,16 +131,16 @@ def complete(task_id):
     flash('The task was marked as complete.')
     return redirect(url_for('tasks'))
 
+
 # delete tasks
 @app.route('/delete/<int:task_id>/', )
 @login_required
 def delete_entry(task_id):
     g.db = connect_db()
-    cursor = g.db.execute(
+    g.db.execute(
         "delete from tasks where task_id="+str(task_id)
     )
     g.db.commit()
     g.db.close()
     flash('The task was deleted.')
     return redirect(url_for('tasks'))
-
