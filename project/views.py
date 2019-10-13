@@ -3,6 +3,7 @@ from functools import wraps
 from flask import Flask, flash, redirect, render_template, \
     request, session, url_for
 from flask_sqlalchemy import SQLAlchemy
+from forms import AddTaskForm
 
 # config
 
@@ -62,7 +63,7 @@ def tasks():
         .filter_by(status='0').order_by(Task.due_date.asc())
     return render_template(
         'tasks.html',
-        form = AddTaskForm(request.form),
+        form=AddTaskForm(request.form),
         open_tasks=open_tasks,
         closed_tasks=closed_tasks
     )
